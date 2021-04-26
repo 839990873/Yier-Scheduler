@@ -3,11 +3,12 @@ package com.scu.ztz.yierschedulerutils.DO;
 import java.sql.Timestamp;
 
 public class Executor {
-    public int id;
-    public String executorName;
-    public String executorAddress;
-    public Timestamp lastUpdateTime;
+    private int id;
+    private String executorName;
+    private String executorAddress;
+    private Timestamp lastUpdateTime;
 
+    
     public int getId() {
         return id;
     }

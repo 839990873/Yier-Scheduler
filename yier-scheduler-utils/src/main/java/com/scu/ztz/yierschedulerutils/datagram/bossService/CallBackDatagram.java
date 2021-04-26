@@ -2,7 +2,6 @@ package com.scu.ztz.yierschedulerutils.datagram.bossService;
 
 import com.scu.ztz.yierschedulerutils.datagram.BossServiceDatagram;
 import com.scu.ztz.yierschedulerutils.enums.service.BossServiceEnums;
-import com.scu.ztz.yierschedulerutils.enums.service.ServiceEnums;
 import com.scu.ztz.yierschedulerutils.utils.GsonTool;
 
 public class CallBackDatagram extends BossServiceDatagram {
