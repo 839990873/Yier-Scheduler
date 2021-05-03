@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -20,6 +21,7 @@ import com.scu.ztz.yierschedulerboss.business.ExecutorServiceRequester;
 import com.scu.ztz.yierschedulerboss.server.BossServer;
 import com.scu.ztz.yierschedulerutils.DAO.ExecutorDao;
 import com.scu.ztz.yierschedulerutils.DAO.JobInfoDao;
+import com.scu.ztz.yierschedulerutils.DAO.JobLogDao;
 import com.scu.ztz.yierschedulerutils.DO.Executor;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -47,6 +49,13 @@ public class YierBossConfig implements InitializingBean, DisposableBean {
 
     @Autowired
     public JobInfoDao jobInfoDao;
+
+    @Autowired
+    public JobLogDao jobLogDao;
+
+    public JobLogDao getJobLogDao() {
+        return jobLogDao;
+    }
 
     public ExecutorDao getExexutorDao() {
         return exexutorDao;
@@ -128,7 +137,11 @@ public class YierBossConfig implements InitializingBean, DisposableBean {
     JobTrigger jobTrigger = JobTrigger.getInstance();
     // 业务线程池,参数todo
     public static ThreadPoolExecutor bizThreadPool = new ThreadPoolExecutor(10, 10, 256, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(256));
+            new ArrayBlockingQueue<>(256),new ThreadFactory(){
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "Boss业务线程池" + r.hashCode());
+                };
+            });
 
     @Override
     public void afterPropertiesSet() throws Exception {

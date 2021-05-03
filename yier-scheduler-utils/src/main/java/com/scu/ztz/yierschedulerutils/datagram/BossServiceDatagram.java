@@ -7,7 +7,6 @@ import com.scu.ztz.yierschedulerutils.utils.GsonTool;
 //Executor -> Boss的Datagram
 public abstract class BossServiceDatagram implements DatagramConverter{
     // 发送请求的executor的ID
-    protected int executorID;
     private String type;
 
     protected BossServiceDatagram() {
@@ -16,9 +15,6 @@ public abstract class BossServiceDatagram implements DatagramConverter{
 
     public abstract String getType();
 
-    public int getExecutorID() {
-        return executorID;
-    }
 
     @Override
     public Datagram toDatagram() {

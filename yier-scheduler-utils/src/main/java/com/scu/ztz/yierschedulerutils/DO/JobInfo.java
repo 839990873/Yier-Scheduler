@@ -1,5 +1,6 @@
 package com.scu.ztz.yierschedulerutils.DO;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class JobInfo {
@@ -13,11 +14,11 @@ public class JobInfo {
     private int executorTimeout; // 任务执行超时时间，单位秒
     private int executorFailRetryCount; // 失败重试次数
     private String glueType; // GLUE类型,对应com.scu.ztz.yierschedulerutils.enums;
-    private String glueSource; // GLUE源代码
+    private String glueSourceCode; // GLUE源代码
     private String glueProerties; // GLUE源代码
     private int triggerable; // 调度状态：0-停止，1-运行
-    private long triggerLastTime; // 上次调度时间
-    private long triggerNextTime; // 下次调度时间
+    private Timestamp triggerLastTime; // 上次调度时间
+    private Timestamp triggerNextTime; // 下次调度时间
     private String jobName; // 任务的名字
     private String routeStrategy;
 
@@ -102,12 +103,12 @@ public class JobInfo {
         this.glueType = glueType;
     }
 
-    public String getGlueSource() {
-        return glueSource;
+    public String getGlueSourceCode() {
+        return glueSourceCode;
     }
 
-    public void setGlueSource(String glueSource) {
-        this.glueSource = glueSource;
+    public void setGlueSourceCode(String glueSourceCode) {
+        this.glueSourceCode = glueSourceCode;
     }
 
     public String getGlueProerties() {
@@ -126,19 +127,19 @@ public class JobInfo {
         this.glueProerties = glueProerties;
     }
 
-    public long getTriggerLastTime() {
+    public Timestamp getTriggerLastTime() {
         return triggerLastTime;
     }
 
-    public void setTriggerLastTime(long triggerLastTime) {
+    public void setTriggerLastTime(Timestamp triggerLastTime) {
         this.triggerLastTime = triggerLastTime;
     }
 
-    public long getTriggerNextTime() {
+    public Timestamp getTriggerNextTime() {
         return triggerNextTime;
     }
 
-    public void setTriggerNextTime(long triggerNextTime) {
+    public void setTriggerNextTime(Timestamp triggerNextTime) {
         this.triggerNextTime = triggerNextTime;
     }
 

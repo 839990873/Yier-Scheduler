@@ -11,7 +11,16 @@ public class RunDatagram extends ExecutorServiceDatagram {
     private String glueSource; //源代码
     private String glueProerties; //源代码有关的配置
     private String jobName; // 任务的名字
+    private int logId;
 
+    public int getLogId() {
+        return logId;
+    }
+
+    public void setLogId(int logId) {
+        this.logId = logId;
+    }
+    
     public String getExeAdd() {
         return exeAdd;
     }
@@ -44,7 +53,7 @@ public class RunDatagram extends ExecutorServiceDatagram {
         return glueProerties;
     }
     
-    public void setGlueSource(String glueSource) {
+    public void setGlueSourceCode(String glueSource) {
         this.glueSource = glueSource;
     }
 

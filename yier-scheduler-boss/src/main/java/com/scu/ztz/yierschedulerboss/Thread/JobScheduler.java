@@ -4,12 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +37,7 @@ public class JobScheduler {
     private static final int SCHEDULER_READTIME = 5000;
     private static final int SLEEP_TIME = 1000; // 调度的最小时间单位
 
-    public void start() {
+    public void start() throws InterruptedException {
         startScheduleThread();
         startRingThread();
     }
@@ -56,30 +58,33 @@ public class JobScheduler {
                         // 获得(当前时间时间点+5s)之前的所有任务
                         long nowTime = System.currentTimeMillis();
                         List<JobInfo> scheduleList = YierBossConfig.getBossConfig().getJobInfoDao()
-                                .scheduleJobQuery(nowTime + SCHEDULER_READTIME);
+                                .scheduleJobQuery(new Timestamp(nowTime + SCHEDULER_READTIME));
+                        // 实际执行的列表
+                        List<JobInfo> runList = new ArrayList<>();
                         if (scheduleList != null && scheduleList.size() > 0) {
                             for (JobInfo jobInfo : scheduleList) {
                                 // (-∞，nowTime)，代表过期任务
-                                if (nowTime > jobInfo.getTriggerNextTime()) {
+                                if (nowTime > jobInfo.getTriggerNextTime().getTime()) {
                                     // 过期任务的处理：todo
                                     logger.info("过期任务:" + jobInfo.getJobDescription());
                                 } else {
                                     // (nowtime,nowTime+5s),当前需要触发的任务
                                     // 获得启动的时间
-                                    int ringSecond = (int) ((jobInfo.getTriggerNextTime() / 1000) % 60);
+                                    int ringSecond = (int) ((jobInfo.getTriggerNextTime().getTime() / 1000) % 60);
                                     // 向时间轮推送
-                                    logger.info("时间轮推送:");
+                                    logger.info("时间轮推送:id = {},jd={}",jobInfo.getId(),jobInfo.getJobDescription());
                                     pushJobToRing(ringSecond, jobInfo);
                                     // 刷新下次执行时间
                                     refreshNextValidTime(jobInfo);
+                                    runList.add(jobInfo);
                                 }
                             }
                             // 3、update trigger info
-                            for (JobInfo jobInfo : scheduleList) {
+                            for (JobInfo jobInfo : runList) {
                                 YierBossConfig.getBossConfig().getJobInfoDao().scheduleUpdate(jobInfo);
                             }
                         } else {
-                            logger.info("没有找到有效的job");
+                            logger.info("没有找到可推送的的job");
                         }
                     } catch (Exception e) {
                         if (!scheduleThreadStopFlag) {
@@ -103,13 +108,15 @@ public class JobScheduler {
         scheduleThread.start();
     }
 
-    private void startRingThread() {
+    private void startRingThread() throws InterruptedException {
+        Thread.sleep((new Random().nextInt(9)+1)*100);
         ringThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 // 时间轮需要先对齐秒数
                 alignSeconds(1000);
                 while (!ringThreadStopFlag) {
+                    long start = System.currentTimeMillis();
                     try {
                         List<JobInfo> ringItemData = new ArrayList<>();
                         int nowSecond = Calendar.getInstance().get(Calendar.SECOND);
@@ -119,15 +126,15 @@ public class JobScheduler {
                             continue;
                         }
                         ringItemData.addAll(tmpData);
-                        logger.debug("时间轮触发:" + nowSecond + " = " + Arrays.asList(ringItemData));
                         ringItemData.forEach(i -> JobTrigger.getInstance().addTrigger(i));
-                        logger.debug("时间轮触发:" + nowSecond + " = " +"完成");
+                        logger.info("时间轮触发:" + nowSecond + " = " +"完成");
                     } catch (Exception e) {
                         if (!ringThreadStopFlag) {
                             logger.error("时间轮意外终止,{}", e);
                         }
                     } finally {
-                        alignSeconds(1000);
+                        if(System.currentTimeMillis()-start<1000)
+                            alignSeconds(1000);
                     }
                 }
                 logger.info("时间轮线程停止");
@@ -142,7 +149,7 @@ public class JobScheduler {
         try {
             TimeUnit.MILLISECONDS.sleep(millSeconds - System.currentTimeMillis() % millSeconds);
         } catch (InterruptedException e) {
-            logger.warn("align Seconds Failed");
+            logger.warn("对齐时间失败：{}",e.getMessage());
         }
     }
 
@@ -157,26 +164,28 @@ public class JobScheduler {
     }
 
     private void refreshNextValidTime(JobInfo jobInfo) {
-        Date nextValidTime = generateNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
+        // Date nextValidTime = generateNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
+        Timestamp nextValidTime = 
+        generateNextValidTime(jobInfo, jobInfo.getTriggerNextTime());
         if (nextValidTime != null) {
             jobInfo.setTriggerLastTime(jobInfo.getTriggerNextTime());
-            jobInfo.setTriggerNextTime(nextValidTime.getTime());
+            jobInfo.setTriggerNextTime(nextValidTime);
         } else {
             jobInfo.setTriggerable(0);
-            jobInfo.setTriggerLastTime(0);
-            jobInfo.setTriggerNextTime(0);
+            jobInfo.setTriggerLastTime(new Timestamp(0));
+            jobInfo.setTriggerNextTime(new Timestamp(0));
             logger.warn("refreshNextValidTime: Fail for job={},scheduleType={},schedulePlan={}", jobInfo.getId(),
                     jobInfo.getScheduleType(), jobInfo.getSchedulePlan());
         }
     }
 
-    public static Date generateNextValidTime(JobInfo jobInfo, Date fromTime) {
+    public static Timestamp generateNextValidTime(JobInfo jobInfo, Timestamp fromTime) {
         ScheduleTypeEnum scheduleTypeEnum = ScheduleTypeEnum.match(jobInfo.getScheduleType(), null);
         if (ScheduleTypeEnum.CRON == scheduleTypeEnum) {
             return null;
             // todo
         } else if (ScheduleTypeEnum.FIX_RATE == scheduleTypeEnum) {
-            return new Date(fromTime.getTime() + Integer.valueOf(jobInfo.getSchedulePlan()) * 1000);
+            return new Timestamp(fromTime.getTime() + Integer.valueOf(jobInfo.getSchedulePlan()) * 1000);
         }
         return null;
     }

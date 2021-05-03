@@ -6,6 +6,10 @@ import com.scu.ztz.yierschedulerutils.utils.GsonTool;
 
 public class BeatDatagram extends ExecutorServiceDatagram {
 
+    String ExecutorAddress;
+    int activeCount;
+
+    
     @Override
     public String getType() {
         return ExecutorServiceEnums.BEAT;

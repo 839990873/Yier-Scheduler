@@ -6,6 +6,8 @@ import com.scu.ztz.yierschedulerutils.utils.GsonTool;
 
 public class RegistryRemoveDatagram extends BossServiceDatagram {
 
+    String executorAddress;
+
     @Override
     public String getType() {
         return BossServiceEnums.REGISTRY_REMOVE;

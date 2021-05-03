@@ -1,7 +1,7 @@
 package com.scu.ztz.yierschedulerboss.router;
 // Inspired by XXL-job
 public enum RouteStrategyEnum {
-    ROUND("Go around", null), RANDOM("Randomly", new RouteRandom()), CONSISTENT_HASH("CONSISTENT HASH", null),
+    ROUND("Go around", new GoRound()), RANDOM("Randomly", new RouteRandom()), CONSISTENT_HASH("CONSISTENT HASH", null),
     LEAST_RECENTLY_USED("LRU", null), BUSYOVER("Busy over", null);
 
     RouteStrategyEnum(String title, Router router) {

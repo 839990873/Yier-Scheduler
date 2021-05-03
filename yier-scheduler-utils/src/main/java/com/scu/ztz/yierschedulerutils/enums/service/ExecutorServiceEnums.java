@@ -8,8 +8,8 @@ public class ExecutorServiceEnums extends ServiceEnums{
     public static final String BEAT = "beat_executor";
     public static final String RUN = "run_executor";
     public static final String GET_LOG = "getLog_executor";
-    public static final String KILL = "kill_executor";
-    private static final String[] executorServiceEnums = new String[] { BEAT, RUN, GET_LOG, KILL };
+    // public static final String KILL = "kill_executor";
+private static final String[] executorServiceEnums = new String[] { BEAT, RUN, GET_LOG, /*KILL*/ };
 
     @Override
     public String[] getEnums() {

@@ -39,14 +39,12 @@ public class ExecutorServerHandler extends SimpleChannelInboundHandler<String> {
                 logger.warn("Unhandled commonServiceEnums:" + datagramType);
             }
         } else if ((YierExecutorConfig.executorServiceEnums.match(datagramType)) != null) {
-            bizThreadPool.execute(() -> {
-                try {
-                    var ret = executorServiceProvider.handle(datagram, ctx.channel());
-                    ctx.channel().writeAndFlush(ret.toDatagram().toJsonWithDelimiter());
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
-            });
+            try {
+                var ret = executorServiceProvider.handle(datagram, ctx.channel());
+                ctx.channel().writeAndFlush(ret.toDatagram().toJsonWithDelimiter());
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
         } else {
             logger.warn("Wrong Datagram type:" + datagramType);
         }

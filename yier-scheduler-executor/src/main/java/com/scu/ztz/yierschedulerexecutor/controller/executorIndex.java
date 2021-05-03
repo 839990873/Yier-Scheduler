@@ -26,5 +26,4 @@ public class executorIndex {
     public String requestMethodName(@RequestParam String param) {
         return "1";
     }
-    
 }

@@ -1,8 +1,8 @@
 package com.scu.ztz.yierschedulerutils.enums;
 // Inspired by XXL-job
 public enum GlueTypeEnum {
-    GLUE_GROOVY("GLUE(Java)", null),
-    GLUE_SQL("GLUE(SQL)", ".sql");
+    GLUE_GROOVY("GLUE(Java)", "java");
+    // GLUE_SQL("GLUE(SQL)", ".sql");
 
 
     private String desc;

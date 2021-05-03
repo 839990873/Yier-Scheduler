@@ -27,7 +27,7 @@ public class BossServiceProvider extends AbstractBossBiz {
         executor.setExecutorName(datagram.getName());
         executor.setLastUpdateTime(datagram.getCurrentTime());
         YierBossConfig.addExecutror(executor, c);
-        return new ReturnDatagram(ReturnDatagram.SUCCESS_CODE, "Registry Success");
+        return new ReturnDatagram(ReturnDatagram.SUCCESS_CODE, "注册成功");
     }
 
     @Override

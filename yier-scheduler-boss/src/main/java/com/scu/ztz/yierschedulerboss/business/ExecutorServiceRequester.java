@@ -9,8 +9,8 @@ import com.scu.ztz.yierschedulerutils.business.AbstractExecutorBiz;
 import com.scu.ztz.yierschedulerutils.datagram.Datagram;
 import com.scu.ztz.yierschedulerutils.datagram.ReturnDatagram;
 import com.scu.ztz.yierschedulerutils.datagram.executorService.BeatDatagram;
-import com.scu.ztz.yierschedulerutils.datagram.executorService.GetLogDatagram;
-import com.scu.ztz.yierschedulerutils.datagram.executorService.KillDatagram;
+// import com.scu.ztz.yierschedulerutils.datagram.executorService.GetLogDatagram;
+// import com.scu.ztz.yierschedulerutils.datagram.executorService.KillDatagram;
 import com.scu.ztz.yierschedulerutils.datagram.executorService.RunDatagram;
 
 import io.netty.channel.Channel;
@@ -23,15 +23,15 @@ public class ExecutorServiceRequester extends AbstractExecutorBiz {
         return null;
     }
 
-    @Override
-    public ReturnDatagram getLog(GetLogDatagram datagram, Channel c) {
-        return null;
-    }
+    // @Override
+    // public ReturnDatagram getLog(GetLogDatagram datagram, Channel c) {
+    //     return null;
+    // }
 
-    @Override
-    public ReturnDatagram kill(KillDatagram datagram, Channel c) {
-        return null;
-    }
+    // @Override
+    // public ReturnDatagram kill(KillDatagram datagram, Channel c) {
+    //     return null;
+    // }
 
     @Override
     public ReturnDatagram run(RunDatagram datagram, Channel c) {

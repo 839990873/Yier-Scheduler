@@ -29,6 +29,7 @@
 		<junit.version>5.7.0</junit.version>
 		<javax.annotation-api.version>1.3.2</javax.annotation-api.version>
 		<groovy.version>3.0.7</groovy.version>
+		<skipTests>true</skipTests>
 	</properties>
 	
 

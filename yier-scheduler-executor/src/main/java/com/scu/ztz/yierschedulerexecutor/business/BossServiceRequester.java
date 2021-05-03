@@ -50,8 +50,8 @@ public class BossServiceRequester extends AbstractBossBiz {
         } finally {
             requestLock.unlock();
         }
-        logger.info("Registry Success");
-        return new ReturnDatagram(ReturnDatagram.SUCCESS_CODE, "Registry Success:" + datagram.getExecutorAddress());
+        logger.info("注册成功");
+        return new ReturnDatagram(ReturnDatagram.SUCCESS_CODE, "注册成功:" + datagram.getExecutorAddress());
     }
 
     @Override

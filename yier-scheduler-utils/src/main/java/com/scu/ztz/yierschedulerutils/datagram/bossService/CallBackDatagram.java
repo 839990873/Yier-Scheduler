@@ -5,6 +5,10 @@ import com.scu.ztz.yierschedulerutils.enums.service.BossServiceEnums;
 import com.scu.ztz.yierschedulerutils.utils.GsonTool;
 
 public class CallBackDatagram extends BossServiceDatagram {
+    String executorAddress;
+    int logId;
+    String status;
+    String message;
 
     @Override
     public String getType() {

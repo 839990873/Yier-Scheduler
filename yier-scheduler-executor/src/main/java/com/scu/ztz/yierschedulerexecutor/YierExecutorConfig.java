@@ -3,6 +3,7 @@ package com.scu.ztz.yierschedulerexecutor;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +15,8 @@ import com.scu.ztz.yierschedulerexecutor.business.BossServiceRequester;
 import com.scu.ztz.yierschedulerexecutor.business.ExecutorServiceProvider;
 import com.scu.ztz.yierschedulerexecutor.server.ExecutorServer;
 import com.scu.ztz.yierschedulerutils.DAO.ExecutorDao;
+import com.scu.ztz.yierschedulerutils.DAO.JobInfoDao;
+import com.scu.ztz.yierschedulerutils.DAO.JobLogDao;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,9 +31,26 @@ import org.slf4j.LoggerFactory;
 @Component
 public class YierExecutorConfig implements InitializingBean, DisposableBean {
     private static Logger logger = LoggerFactory.getLogger(YierExecutorConfig.class);
+    private static YierExecutorConfig executorConfig = null;
+
+    public static YierExecutorConfig getExecutorConfig() {
+        return executorConfig;
+    }
 
     @Autowired
-    private ExecutorDao exexutorDao;
+    public JobInfoDao jobInfoDao;
+
+    @Autowired
+    public JobLogDao jobLogDao;
+
+    public JobInfoDao getJobInfoDao() {
+        return jobInfoDao;
+    }
+
+    public JobLogDao getJobLogDao() {
+        return jobLogDao;
+    }
+
 
     // ServiceProvider和ServiceRequester,和返回消息的队列,保证前面的初始化了再初始化他们，顺序调转会导致问题，最好改造成Autowired和Bean
     private static final int MAX_QUEUE_SIZE = 128;
@@ -56,7 +76,11 @@ public class YierExecutorConfig implements InitializingBean, DisposableBean {
     
     // 业务线程池,参数todo
     public static ThreadPoolExecutor bizThreadPool = new ThreadPoolExecutor(10, 10, MAX_TIMEOUT, TimeUnit.SECONDS,
-    new ArrayBlockingQueue<>(256));
+    new ArrayBlockingQueue<>(256),new ThreadFactory(){
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "Executor业务线程池" + r.hashCode());
+        };
+    });
     
     public static int getMAX_TIMEOUT() {
         return MAX_TIMEOUT;
@@ -98,6 +122,7 @@ public class YierExecutorConfig implements InitializingBean, DisposableBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
+        executorConfig = this;
         bossServiceRequester = new BossServiceRequester();
         executorServiceProvider =  new ExecutorServiceProvider();
         // 启动Executor的server服务
