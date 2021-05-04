@@ -66,7 +66,7 @@ public class JobScheduler {
                                 // (-∞，nowTime)，代表过期任务
                                 if (nowTime > jobInfo.getTriggerNextTime().getTime()) {
                                     // 过期任务的处理：todo
-                                    logger.info("过期任务:" + jobInfo.getJobDescription());
+                                    // logger.info("过期任务:" + jobInfo.getJobDescription());
                                 } else {
                                     // (nowtime,nowTime+5s),当前需要触发的任务
                                     // 获得启动的时间
@@ -84,7 +84,7 @@ public class JobScheduler {
                                 YierBossConfig.getBossConfig().getJobInfoDao().scheduleUpdate(jobInfo);
                             }
                         } else {
-                            logger.info("没有找到可推送的的job");
+                            // logger.info("没有找到可推送的的job");
                         }
                     } catch (Exception e) {
                         if (!scheduleThreadStopFlag) {
@@ -122,7 +122,7 @@ public class JobScheduler {
                         int nowSecond = Calendar.getInstance().get(Calendar.SECOND);
                         List<JobInfo> tmpData = ring.remove(nowSecond + 60 % 60);
                         if (tmpData == null) {
-                            logger.info("当前时间轮为空，跳过");
+                            // logger.info("当前时间轮为空，跳过");
                             continue;
                         }
                         ringItemData.addAll(tmpData);
